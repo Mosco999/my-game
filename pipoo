@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>لعبة تفادي العقبات</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial;
+    }
+    #game {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: #f0f0f0;
+      overflow: hidden;
+    }
+    #player {
+      position: absolute;
+      bottom: 20px;
+      left: 50px;
+      width: 40px;
+      height: 40px;
+      background: dodgerblue;
+    }
+    .obstacle {
+      position: absolute;
+      top: 0;
+      width: 40px;
+      height: 40px;
+      background: tomato;
+    }
+    #score {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <div id="player"></div>
+    <div id="score">النتيجة: 0</div>
+  </div>
+
+  <script>
+    const game = document.getElementById('game');
+    const player = document.getElementById('player');
+    const scoreDisplay = document.getElementById('score');
+
+    let score = 0;
+    let playerX = 50;
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') {
+        playerX -= 20;
+      } else if (e.key === 'ArrowRight') {
+        playerX += 20;
+      }
+      playerX = Math.max(0, Math.min(window.innerWidth - 40, playerX));
+      player.style.left = playerX + 'px';
+    });
+
+    function createObstacle() {
+      const obs = document.createElement('div');
+      obs.className = 'obstacle';
+      obs.style.left = Math.floor(Math.random() * (window.innerWidth - 40)) + 'px';
+      game.appendChild(obs);
+
+      let y = 0;
+      const interval = setInterval(() => {
+        y += 4;
+        obs.style.top = y + 'px';
+
+        const obsX = parseInt(obs.style.left);
+        if (
+          y > window.innerHeight - 60 &&
+          obsX < playerX + 40 &&
+          obsX + 40 > playerX
+        ) {
+          alert('💥 خسرت! النتيجة: ' + score);
+          window.location.reload();
+        }
+
+        if (y > window.innerHeight) {
+          clearInterval(interval);
+          obs.remove();
+          score++;
+          scoreDisplay.innerText = 'النتيجة: ' + score;
+        }
+      }, 20);
+    }
+
+    setInterval(createObstacle, 1000);
+  </script>
+</body>
+</html>
